@@ -38,7 +38,7 @@ public class LandObject : TileObject
         UpdateId(Tile.Id);
     }
 
-    private bool AlwaysFlat(ushort id)
+    public bool AlwaysFlat(ushort id)
     {
         ref var tileData = ref TileDataLoader.Instance.LandData[id];
         // Water tiles are always flat

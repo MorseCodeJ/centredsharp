@@ -70,6 +70,7 @@ public class MapManager
     public bool WalkableSurfaces = false;
     public bool FlatView = false;
     public bool FlatShowHeight = false;
+    public bool FlatShowHeightGradient = false;
     public bool FlatStatics = false;
     public bool AnimatedStatics = true;
     public bool ShowGrid = false;
@@ -711,6 +712,10 @@ public class MapManager
                     {
                         FlatShowHeight = !FlatShowHeight;
                     }
+                    if (IsKeyPressed(keyState, Keys.V))
+                    {
+                        FlatShowHeightGradient = !FlatShowHeightGradient;
+                    }
                     if (IsKeyPressed(keyState, Keys.G))
                     {
                         ShowGrid = !ShowGrid;
@@ -1230,6 +1235,7 @@ public class MapManager
     private void DrawTileHeight(LandObject tile, DynamicSpriteFont font, float yOffset)
     {
         var text = tile.LandTile.Z.ToString();
+        //var text = tile.LandTile.ZString;
         var halfTextSize = font.MeasureString(text) / 2;
         var projected = _gfxDevice.Viewport.Project
             (tile.Vertices[0].Position, Camera.WorldViewProj, Matrix.Identity, Matrix.Identity);
@@ -1238,7 +1244,19 @@ public class MapManager
         if (pos.X > 0 && pos.X < _gfxDevice.PresentationParameters.BackBufferWidth && pos.Y > 0 &&
             pos.Y < _gfxDevice.PresentationParameters.BackBufferHeight)
         {
-            _spriteBatch.DrawString(font, text, pos, Color.White);
+            if (CEDGame.MapManager.FlatShowHeightGradient)
+            {
+                int colorValue = (int)((tile.LandTile.Z + 128) / 6.4);
+                _spriteBatch.DrawString(font, text, pos + new Vector2(2, 0), Color.Black);
+                _spriteBatch.DrawString(font, text, pos + new Vector2(-2, 0), Color.Black);
+                _spriteBatch.DrawString(font, text, pos + new Vector2(0, 2), Color.Black);
+                _spriteBatch.DrawString(font, text, pos + new Vector2(0, -2), Color.Black);
+                _spriteBatch.DrawString(font, text, pos, Colors.MapGradient[colorValue]);
+            }
+            else
+            {
+                _spriteBatch.DrawString(font, text, pos, Color.White);
+            }
         }
     }
 

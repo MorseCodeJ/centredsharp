@@ -21,6 +21,7 @@ public class LandTile : BaseTile
         _x = x;
         _y = y;
         _z = reader.ReadSByte();
+        ZString = _z.ToString();
     }
 
     public LandBlock? Block { get; }
@@ -42,6 +43,8 @@ public class LandTile : BaseTile
         }
     }
 
+    public string ZString { get; set; }
+
     public override sbyte Z
     {
         get => _z;
@@ -51,6 +54,7 @@ public class LandTile : BaseTile
             {
                 Block?.Landscape.OnLandElevated(this, value);
                 Block?.OnChanged();
+                ZString = Z.ToString();
             }
         }
     }

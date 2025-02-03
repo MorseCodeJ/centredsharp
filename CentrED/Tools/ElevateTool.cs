@@ -19,42 +19,42 @@ public class ElevateTool : BaseTool
         RANDOM = 2
     }
 
-    private int zMode;
-    private int value;
+    private int _zMode;
+    private int _value;
     private int _randomZ = 0;
 
-    private bool useZFloor;
-    private int zFloor;
-    private bool drawMode;
+    private bool _useZFloor;
+    private int _zFloor;
+    private bool _drawMode;
 
     internal override void Draw()
     {
         base.Draw();
-        ImGui.RadioButton("Add", ref zMode, (int)ZMode.ADD);
-        ImGui.RadioButton("Set", ref zMode, (int)ZMode.SET);
-        ImGui.RadioButton("Random +/-", ref zMode, (int)ZMode.RANDOM);
-        ImGui.Checkbox("Draw Mode", ref drawMode);
+        ImGui.RadioButton("Add", ref _zMode, (int)ZMode.ADD);
+        ImGui.RadioButton("Set", ref _zMode, (int)ZMode.SET);
+        ImGui.RadioButton("Random +/-", ref _zMode, (int)ZMode.RANDOM);
+        ImGui.Checkbox("Draw Mode", ref _drawMode);
         if (ImGui.Button("Inverse"))
         {
-            value = -value;
+            _value = -_value;
         }
-        UIManager.DragInt("Z", ref value, 1, -128, 127);
-        if (zMode == (int)ZMode.ADD || zMode == (int)ZMode.SET)
+        UIManager.DragInt("Z", ref _value, 1, -128, 127);
+        if (_zMode == (int)ZMode.ADD || _zMode == (int)ZMode.SET)
         {
             UIManager.DragInt("Add Random Z", ref _randomZ, 1, 0, 127);
         }
-        ImGui.Checkbox("Use Z floor.", ref useZFloor);
-        if (useZFloor)
+        ImGui.Checkbox("Use Z floor.", ref _useZFloor);
+        if (_useZFloor)
         {
-            UIManager.DragInt("Z Floor", ref zFloor, 1, -128, 128);
+            UIManager.DragInt("Z Floor", ref _zFloor, 1, -128, 128);
         }
     }
 
-    private sbyte NewZ(BaseTile tile) => (sbyte)((ZMode)zMode switch
+    private sbyte NewZ(BaseTile tile) => (sbyte)((ZMode)_zMode switch
     {
-        ZMode.ADD => useZFloor ? Math.Max(tile.Z + value + Random.Next(0, _randomZ), zFloor) : tile.Z + value + Random.Next(0, _randomZ),
-        ZMode.SET => value + Random.Next(0, _randomZ),
-        ZMode.RANDOM => tile.Z + Random.Next(-Math.Abs(value), Math.Abs(value) + 1),
+        ZMode.ADD => _useZFloor ? Math.Max(tile.Z + _value + Random.Next(0, _randomZ), _zFloor) : tile.Z + _value + Random.Next(0, _randomZ),
+        ZMode.SET => _value + Random.Next(0, _randomZ),
+        ZMode.RANDOM => tile.Z + Random.Next(-Math.Abs(_value), Math.Abs(_value) + 1),
         _ => throw new ArgumentOutOfRangeException()
     });
 
@@ -98,14 +98,17 @@ public class ElevateTool : BaseTool
                 o.Tile.Z = ghostTile.Tile.Z;
             }
         }
-        else if (o is LandObject lo)
+        else if (o is LandObject lo && lo.Tile is LandTile lt)
         {
             if (MapManager.GhostLandTiles.TryGetValue(lo, out var ghostTile))
             {
-                o.Tile.Z = ghostTile.Tile.Z;
-                if (drawMode)
+                if (_drawMode)
                 {
-                    o.Tile.Id = (ushort)UIManager.GetWindow<TilesWindow>().ActiveId;
+                    lt.ReplaceLand(UIManager.GetWindow<TilesWindow>().ActiveId, ghostTile.Tile.Z);
+                }
+                else
+                {
+                    lt.Z = ghostTile.Tile.Z;
                 }
             }
         }
