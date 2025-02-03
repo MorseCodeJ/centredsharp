@@ -259,6 +259,7 @@ public class MapManager
         Tools.Add(new RemoveTool());
         Tools.Add(new HueTool());
         Tools.Add(new LandBrushTool());
+        Tools.Add(new SculptTool());
 
         _activeTool = DefaultTool;
     }

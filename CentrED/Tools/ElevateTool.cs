@@ -1,5 +1,6 @@
 ﻿using CentrED.Map;
 using CentrED.UI;
+using CentrED.UI.Windows;
 using ImGuiNET;
 using Microsoft.Xna.Framework.Input;
 
@@ -22,12 +23,18 @@ public class ElevateTool : BaseTool
     private int value;
     private int _randomZ = 0;
 
+    private bool useZFloor;
+    private int zFloor;
+
+    private bool drawMode;
+
     internal override void Draw()
     {
         base.Draw();
         ImGui.RadioButton("Add", ref zMode, (int)ZMode.ADD);
         ImGui.RadioButton("Set", ref zMode, (int)ZMode.SET);
         ImGui.RadioButton("Random +/-", ref zMode, (int)ZMode.RANDOM);
+        ImGui.Checkbox("Draw Mode", ref drawMode);
         if (ImGui.Button("Inverse"))
         {
             value = -value;
@@ -37,11 +44,16 @@ public class ElevateTool : BaseTool
         {
             UIManager.DragInt("Add Random Z", ref _randomZ, 1, 0, 127);
         }
+        ImGui.Checkbox("Use Z floor.", ref useZFloor);
+        if (useZFloor)
+        {
+            UIManager.DragInt("Z Floor", ref zFloor, 1, -128, 128);
+        }
     }
 
     private sbyte NewZ(BaseTile tile) => (sbyte)((ZMode)zMode switch
     {
-        ZMode.ADD => tile.Z + value + Random.Next(0, _randomZ),
+        ZMode.ADD => useZFloor ? Math.Max(tile.Z + value + Random.Next(0, _randomZ), zFloor) : tile.Z + value + Random.Next(0, _randomZ),
         ZMode.SET => value + Random.Next(0, _randomZ),
         ZMode.RANDOM => tile.Z + Random.Next(-Math.Abs(value), Math.Abs(value) + 1),
         _ => throw new ArgumentOutOfRangeException()
@@ -92,6 +104,10 @@ public class ElevateTool : BaseTool
             if (MapManager.GhostLandTiles.TryGetValue(lo, out var ghostTile))
             {
                 o.Tile.Z = ghostTile.Tile.Z;
+                if (drawMode)
+                {
+                    o.Tile.Id = (ushort)UIManager.GetWindow<TilesWindow>().ActiveId;
+                }
             }
         }
     }
