@@ -25,7 +25,6 @@ public class ElevateTool : BaseTool
 
     private bool useZFloor;
     private int zFloor;
-
     private bool drawMode;
 
     internal override void Draw()
