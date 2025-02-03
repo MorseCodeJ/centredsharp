@@ -34,11 +34,11 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v3.0.0
         with:
-          versionSpec: '6.x'
+          versionSpec: '6.0.x'
       - name: Execute GitVersion
         id: executeGitVersion
         uses: gittools/actions/gitversion/execute@v3.0.0
@@ -49,7 +49,7 @@ jobs:
       - name: Publish
         run: dotnet publish ${{ matrix.project.name }} -c Release -o release_${{ matrix.project.name }} -p:DebugType=None ${{ matrix.project.extraArgs }}
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.project.name }}-${{ runner.os }}-${{ runner.arch }}
           path: ${{ github.workspace }}/release_${{ matrix.project.name }}/*
@@ -62,7 +62,7 @@ jobs:
     
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts/
 

@@ -4,7 +4,7 @@ namespace CentrED.Client.Map;
 
 public partial class ClientLandscape : BaseLandscape
 {
-    private CentrEDClient _client;
+    private readonly CentrEDClient _client;
 
     public ClientLandscape(CentrEDClient client, ushort width, ushort height) : base(width, height)
     {
@@ -95,5 +95,25 @@ public partial class ClientLandscape : BaseLandscape
         }
 
         return block;
+    }
+
+    public override void LogInfo(string message)
+    {
+        _client.LogInfo(message);
+    }
+
+    public override void LogWarn(string message)
+    {
+        _client.LogWarn(message);
+    }
+
+    public override void LogError(string message)
+    {
+        _client.LogError(message);
+    }
+
+    public override void LogDebug(string message)
+    {
+        _client.LogDebug(message);
     }
 }
