@@ -261,6 +261,7 @@ public class MapManager
         Tools.Add(new HueTool());
         Tools.Add(new LandBrushTool());
         Tools.Add(new SculptTool());
+        Tools.Add(new ShorelineTool());
 
         _activeTool = DefaultTool;
     }
