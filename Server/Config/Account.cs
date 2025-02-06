@@ -5,9 +5,19 @@ namespace CentrED.Server.Config;
 
 public class Account
 {
-    public Account() : this("")
+    public Account()
     {
+        Name = "";
+        PasswordHash = Crypto.Md5Hash("");
+        AccessLevel = AccessLevel.None;
+        LastPos = new LastPos();
+        Regions = new List<string>();
+        LastLogon = DateTime.MinValue;
     }
+
+    //public Account() : this("")
+    //{
+    //}
 
     public Account
     (

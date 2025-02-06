@@ -1,8 +1,20 @@
 ﻿using CentrED.Network;
 using CentrED.Server.Config;
 using CentrED.Utility;
+using System.Numerics;
 
 namespace CentrED.Server;
+
+class OtherClientPosPacket : Packet
+{
+    public OtherClientPosPacket(Vector2 pos, string client) : base(0x0C, 0)
+    {
+        Writer.Write((byte)0x09);
+        Writer.Write(pos.X);
+        Writer.Write(pos.Y);
+        Writer.Write(client);
+    }
+}
 
 class BlockPacket : Packet
 {

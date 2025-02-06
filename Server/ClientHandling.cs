@@ -35,6 +35,12 @@ public class ClientHandling
         var y = reader.ReadUInt16();
         ns.Parent.GetAccount(ns.Username)!.LastPos = new LastPos(x, y);
         ns.Parent.Config.Invalidate();
+
+        OtherClientPosPacket p = new OtherClientPosPacket(new System.Numerics.Vector2(x, y), ns.Username);
+        foreach (NetState<CEDServer> client in ns.Parent.Clients)
+        {
+            client.Send(p);
+        }
     }
 
     private static void OnChatMessagePacket(BinaryReader reader, NetState<CEDServer> ns)

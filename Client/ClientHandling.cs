@@ -1,5 +1,6 @@
 ﻿using CentrED.Network;
 using CentrED.Utility;
+using System.Numerics;
 
 namespace CentrED.Client;
 
@@ -18,6 +19,20 @@ public static class ClientHandling
         Handlers[0x05] = new PacketHandler<CentrEDClient>(0, OnChatMessagePacket);
         Handlers[0x07] = new PacketHandler<CentrEDClient>(0, OnAccessChangedPacket);
         Handlers[0x08] = new PacketHandler<CentrEDClient>(0, OnPasswordChangeStatusPacket);
+        Handlers[0x09] = new PacketHandler<CentrEDClient>(0, OnOtherClientPosUpdatePacket);
+    }
+
+    public static readonly Dictionary<string, Vector2> PlayerLocations = [];
+
+    public static void OnOtherClientPosUpdatePacket(BinaryReader reader, NetState<CentrEDClient> ns)
+    {
+        Vector2 pos = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+        string client = reader.ReadString();
+
+        if (!PlayerLocations.TryAdd(client, pos))
+        {
+            PlayerLocations[client] = pos;
+        }
     }
 
     public static void OnClientHandlerPacket(BinaryReader reader, NetState<CentrEDClient> ns)

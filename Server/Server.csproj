@@ -10,6 +10,7 @@
     <Product>Cedserver</Product>
     <AssemblyName>Cedserver</AssemblyName>
     <RootNamespace>CentrED.Server</RootNamespace>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

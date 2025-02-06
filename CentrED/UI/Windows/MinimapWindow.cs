@@ -1,5 +1,8 @@
 ﻿using CentrED.Client;
 using CentrED.IO;
+using CentrED.Map;
+using CentrED.Server.Config;
+using FontStashSharp;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using static CentrED.Application;
@@ -177,6 +180,18 @@ public class MinimapWindow : Window
             ImGui.GetWindowDrawList().AddQuad(p1, p2, p3, p4, ImGui.GetColorU32(UIManager.Red));
             CEDGame.UIManager.GetWindow<LSOWindow>().DrawArea(currentPos);
             CEDGame.UIManager.GetWindow<ServerAdminWindow>().DrawArea(currentPos);
+
+            foreach (var kvp in Client.ClientHandling.PlayerLocations)
+            {
+                if (kvp.Key == CEDGame.MapManager.Client.Username)
+                {
+                    continue;
+                }
+                Vector2 pos = kvp.Value;
+                ImGui.GetWindowDrawList().AddCircleFilled(currentPos + (pos / 8), 3, ImGui.GetColorU32(UIManager.Red));
+                ImGui.GetWindowDrawList().AddText(new Vector2(currentPos.X + (pos.X / 8) + 7, currentPos.Y + (pos.Y / 8) - 5), ImGui.GetColorU32(UIManager.Red), kvp.Key);
+            }
+
             ImGui.EndChild();
         }
     }

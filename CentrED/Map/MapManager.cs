@@ -56,6 +56,8 @@ public class MapManager
         }
     }
 
+    public FontSystem FontSystem => _fontSystem;
+
     public Tool DefaultTool => Tools[0];
 
     public CentrEDClient Client;
