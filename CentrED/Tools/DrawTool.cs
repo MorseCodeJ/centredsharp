@@ -26,6 +26,9 @@ public class DrawTool : BaseTool
     private bool _showVirtualLayer;
     private int  _randomZ = 0;
     private bool _emptyTileOnly;
+    private bool _autoLeafMode;
+
+    private int[] _treeIDs = [0x0CCD, 0x0CD0, 0x0CD3, 0x0CD6, 0x0CD8, 0x0CDA, 0x0CDD, 0x0CE0, 0x0CE3, 0x0CE6];
 
     internal override void Draw()
     {
@@ -56,6 +59,7 @@ public class DrawTool : BaseTool
         }             
         UIManager.DragInt("Add Random Z", ref _randomZ, 1, 0, 127);
         ImGui.Checkbox("Empty tile only", ref _emptyTileOnly);
+        ImGui.Checkbox("AutoLeaf Mode", ref _autoLeafMode);
     }
 
     public override void OnActivated(TileObject? o)
@@ -176,6 +180,10 @@ public class DrawTool : BaseTool
                     Client.Remove(so.StaticTile);
                 }
                 Client.Add(ghostTile.StaticTile);
+                if (_autoLeafMode && _treeIDs.Contains(ghostTile.Tile.Id))
+                {
+                    Client.Add(new StaticObject(new StaticTile((ushort)(ghostTile.Tile.Id + 1), ghostTile.Tile.X, ghostTile.Tile.Y, ghostTile.Tile.Z, 0)).StaticTile);
+                }
             }
         }
         else if(o is LandObject lo)

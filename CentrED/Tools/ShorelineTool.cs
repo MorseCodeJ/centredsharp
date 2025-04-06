@@ -12,23 +12,40 @@ using System.Threading.Tasks;
 
 namespace CentrED.Tools
 {
+    public enum TileType
+    {
+        Grass,
+        Sand,
+        Dirt,
+        Snow,
+        Rock
+    }
+
     public class ShorelineTool : BaseTool
     {
+        public void Initialize()
+        {
+
+        }
+
         public override string Name => "Shoreline";
         public override Keys Shortcut => Keys.F12;
 
         private bool _VirtualLayer;
         private int _VirtualLayerZ;
 
-        private static readonly ushort _OuterSouthCorner = 0x001C;
-        private static readonly ushort[] _InnerSouthCorners = [0x001D, 0x0048];
-        private static readonly ushort[] _InnerWestCorners = [0x001E, 0x0049];
-        private static readonly ushort[] _InnerEastCorners = [0x001F, 0x0050];
-        private static readonly ushort[] _InnerNorthCorners = [0x0020, 0x0051];
-        private static readonly ushort[] _SouthWalls = [0x0021, 0x0025, 0x0044];
-        private static readonly ushort[] _WestWalls = [0x0022, 0x0026, 0x0045];
-        private static readonly ushort[] _EastWalls = [0x0023, 0x0027, 0x0046];
-        private static readonly ushort[] _NorthWalls = [0x0024, 0x0028, 0x0047];
+
+        private readonly static ushort[] s_ShoreSandTiles = new ushort[256];
+
+
+        //private readonly static Dictionary<TileType, byte[]> s_ShoreDirtTiles = new()
+        //{
+        //    { TileType.Grass, [] },
+        //    { TileType.Grass, [] },
+        //    { TileType.Grass, [] },
+        //    { TileType.Grass, [] },
+        //    { TileType.Grass, [] },
+        //};
 
         private static readonly ushort[] _DeepTiles = [0x1A, 0x1B, 0x50];
 
@@ -52,61 +69,81 @@ namespace CentrED.Tools
         private void BuildShore(LandObject lo)
         {
             LandTile tile = (LandTile)lo.Tile;
-            switch (_Neighbors)
+            switch (m_Neighbors)
             {
-                case (Direction.East):
                 case (Direction.East | Direction.Right):
+                    tile.ReplaceLand(0x1B, -15);
+                    AddStatic(lo, [0x179D, 0x179E], [0, -1]);
+                    return;
+                case (Direction.East):
                 case (Direction.East | Direction.Down):
                 case (Direction.East | Direction.Down | Direction.Right):
-                    tile.ReplaceLand(0x50, -15);
-                    AddStatic(lo, [0x179D, 0x179E], [1, 0]);
+                    tile.ReplaceLand(0x1B, -15);
+                    AddStatic(lo, [0x179D, 0x179E], [0, 0]);
+                    return;
+                case (Direction.East | Direction.Down | Direction.Right | Direction.North):
+                    tile.ReplaceLand(0x1B, -15);
+                    AddStatic(lo, [0x17A5], [0, -1]);
                     return;
                 case (Direction.South):
                 case (Direction.South | Direction.Left):
                 case (Direction.South | Direction.Down):
                 case (Direction.South | Direction.Down | Direction.Left):
-                    tile.ReplaceLand(0x50, -15);
-                    AddStatic(lo, [0x17A1, 0x17A2], [0, 1]);
+                    tile.ReplaceLand(0x1B, -15);
+                    AddStatic(lo, [0x17A1, 0x17A2], [0, 0]);
                     return;
                 case (Direction.North):
                 case (Direction.North | Direction.Up):
                 case (Direction.North | Direction.Right):
                 case (Direction.North | Direction.Right | Direction.Up):
-                    tile.ReplaceLand(0x50, -15);
+                    tile.ReplaceLand(0x1B, -15);
                     AddStatic(lo, [0x179F, 0x17A0], [0, 0]);
                     return;
                 case (Direction.West):
                 case (Direction.West | Direction.Left):
                 case (Direction.West | Direction.Up):
                 case (Direction.West | Direction.Up | Direction.Left):
-                    tile.ReplaceLand(0x50, -15);
+                    tile.ReplaceLand(0x1B, -15);
                     AddStatic(lo, [0x17A3, 0x17A4], [0, 0]);
                     return;
                 case (Direction.Right):
-                    tile.ReplaceLand(0x50, -15);
-                    AddStatic(lo, [0x17A9], [0, 0]);
+                    tile.ReplaceLand(0x1B, -15);
+                    AddStatic(lo, [0x17A9], [0, -1]);
+                    AddStatic(lo, [0x1797, 0x1798, 0x1799, 0x179A, 0x179B, 0x179C], [0, 0]);
                     return;
                 case (Direction.Right | Direction.North | Direction.East):
-                    tile.ReplaceLand(0x50, -15);
-                    AddStatic(lo, [0x17A5], [1, 0]);
+                case (Direction.Up | Direction.North | Direction.East | Direction.Right):
+                    tile.ReplaceLand(0x1B, -15);
+                    AddStatic(lo, [0x17A5], [0, -1]);
                     return;
                 case (Direction.Down):
+                    tile.ReplaceLand(0x1B, -15);
+                    AddStatic(lo, [0x17AA], [0, 0]);
+                    return;
                 case (Direction.Down | Direction.South | Direction.East):
-                    tile.ReplaceLand(0x50, -15);
+                case (Direction.Down | Direction.South | Direction.East | Direction.Right):
+                case (Direction.Down | Direction.South | Direction.East | Direction.Left):
+                    tile.ReplaceLand(0x1B, -15);
                     AddStatic(lo, [0x17A7], [0, 0]);
                     return;
                 case (Direction.Left):
-                    tile.ReplaceLand(0x50, -15);
-                    AddStatic(lo, [0x17AB], [0, 1]);
+                    tile.ReplaceLand(0x1B, -15);
+                    AddStatic(lo, [0x17AB], [0, 0]);
                     return;
                 case (Direction.Left | Direction.South | Direction.West):
-                    tile.ReplaceLand(0x50, -15);
+                case (Direction.Left | Direction.South | Direction.West | Direction.Up):
+                case (Direction.Left | Direction.South | Direction.West | Direction.Down):
+                    tile.ReplaceLand(0x1B, -15);
                     AddStatic(lo, [0x17A8], [0, 0]);
                     return;
                 case (Direction.Up):
+                    tile.ReplaceLand(0x1B, -15);
+                    AddStatic(lo, [0x17AC], [0, 0]);
+                    return;
                 case (Direction.Up | Direction.North | Direction.West):
                 case (Direction.North | Direction.Up | Direction.West | Direction.Left):
-                    tile.ReplaceLand(0x50, -15);
+                case (Direction.Up | Direction.North | Direction.West | Direction.Right):
+                    tile.ReplaceLand(0x1B, -15);
                     AddStatic(lo, [0x17A6], [0, 0]);
                     return;
                 default:
@@ -114,7 +151,8 @@ namespace CentrED.Tools
             }
         }
 
-        private Direction _Neighbors = Direction.None;
+        private Direction m_Neighbors = Direction.None;
+        private List<TileObject> m_NeighborTiles = new();
 
         private static LandObject GetNeighbor(LandObject lo, Direction dir)
         {
@@ -153,10 +191,10 @@ namespace CentrED.Tools
                 LandObject neighbor = GetNeighbor(origin, dir);
                 if (!neighbor.AlwaysFlat(neighbor.Tile.Id) && !_DeepTiles.Contains<ushort>(neighbor.Tile.Id))
                 {
-                    _Neighbors |= dir;
+                    m_Neighbors |= dir;
                 }
             }
-            return !(_Neighbors == Direction.None);
+            return !(m_Neighbors == Direction.None);
         }
 
         public override void OnActivated(TileObject? o)
@@ -176,7 +214,7 @@ namespace CentrED.Tools
         {
             if (o is LandObject lo)
             {
-                _Neighbors = Direction.None;
+                m_Neighbors = Direction.None;
                 if (lo.AlwaysFlat(lo.Tile.Id) && CheckLandNeighbors(lo))
                 {
                     BuildShore(lo);
