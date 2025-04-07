@@ -649,7 +649,7 @@ public class MapManager
 
         if (isActive && processKeyboard)
         {
-            var delta = keyState.IsKeyDown(Keys.LeftShift) ? 30 : 10;
+            var delta = keyState.IsKeyDown(Keys.LeftShift) ? 30 : keyState.IsKeyDown(Keys.LeftAlt) ? 2 : 10;
 
             foreach (var key in keyState.GetPressedKeys())
             {
